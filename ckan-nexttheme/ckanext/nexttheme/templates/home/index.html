@@ -1,0 +1,47 @@
+{% ckan_extends %}
+
+{% block content %}
+{{ super() }}
+{% set event_conf = h.thai_gdc_get_conf_group('EVENT') %}
+{% if event_conf.EVENT_PUBLIC and event_conf.EVENT_PUBLIC == 'True' %}
+
+{% if event_conf.EVENT_IMAGE %}
+<style>
+button.close {
+    border: 0;
+}
+.close {
+    float: right;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    opacity: .2;
+}
+</style>
+<div class="modal fade" id="homeEventModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="display: block;">
+        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img src="{{event_conf.EVENT_IMAGE}}" style="width:100%" alt="event popup banner image">
+      </div>
+      {% if event_conf.EVENT_URL and event_conf.EVENT_URL != '' %}
+      <div class="modal-footer">
+        <a href="{{event_conf.EVENT_URL}}" class="btn btn-success" target="_blank">
+          {{event_conf.EVENT_TEXT if event_conf.EVENT_TEXT else 'เพิ่มเติม'}}
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script>
+  $(window).on('load', function() {
+        $('#homeEventModal').modal('show');
+    });
+</script>
+{% endif %}
+{% endif %}
+{% endblock %}

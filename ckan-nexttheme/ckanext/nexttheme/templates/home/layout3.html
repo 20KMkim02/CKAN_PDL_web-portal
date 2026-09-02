@@ -1,0 +1,71 @@
+{% if g.search_background %}
+  {% set background = g.search_background %}
+{% else %}
+  {% set background = '/base/images/bg-banner.jpg' %}
+{% endif %}
+
+<div role="main">
+  <div class="main hero" style="background-image: url('{{ background }}');">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          {% block promoted %}
+            {% snippet 'home/snippets/promoted.html' %}
+          {% endblock %}
+        </div>
+        <div class="col-md-6">
+          {% block search %}
+            {% snippet 'home/snippets/search.html', search_facets=search_facets %}
+          {% endblock %}
+          {% block stats %}
+            {% snippet 'home/snippets/stats.html' %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main module-feeds">
+    <div class="container">
+        {% block featured_group %}
+          {% if h.thai_gdc_get_use_gd_multigroup() and h.thai_gdc_get_group_schemas() != '' %}
+          {% set category_dict = h.scheming_group_schemas() %}
+          {% endif %}
+          {% if category_dict and category_dict.keys()|length %}
+            <div class="row module-content box" style="margin: 3px;margin-bottom: 15px;">
+            {% snippet 'home/snippets/multi_groups.html', category_dict=category_dict %}
+            </div>
+          {% else %}
+            {% set stats = h.get_site_statistics() %}
+            <div class="row" style="padding-bottom: 15px;">
+            {% snippet 'home/snippets/groups.html', stats=stats %}
+            </div>
+          {% endif %}
+        {% endblock %}
+      <div class="row module-content box" style="margin: 3px">
+        <div class="col-md-6">
+          <div class="col-md-12" style="padding: 0px 0px 5px 0px;">
+            <div class="textHeadBorderMiddle">
+                <h3>ชุดข้อมูลที่ปรับปรุงล่าสุด</h3>
+            </div>
+          </div>
+          {% block last_modified_datasets %}
+          {% set last_modified_datasets = h.thai_gdc_get_last_modified_datasets(5) %}
+          {% snippet 'home/snippets/last_modified_datasets.html', datasets = last_modified_datasets %}
+          {% endblock %}
+        </div>
+        <div class="col-md-6">
+          <div class="col-md-12" style="padding: 0px 0px 5px 0px;">
+            <div class="textHeadBorderMiddle">
+                <h3>ชุดข้อมูลที่มีการเข้าชมสูงสุด</h3>
+            </div>
+          </div>
+          {% block top_view_datasets %}
+          {% set top_view_datasets = h.thai_gdc_get_popular_datasets(5) %}
+          {% snippet 'home/snippets/top_view_datasets.html', datasets = top_view_datasets %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

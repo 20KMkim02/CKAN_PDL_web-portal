@@ -1,0 +1,7 @@
+/* ── nexttheme custom overrides ────────────────────────────────────────────
+   Edit this file to customise the site's look.
+   Changes here take effect after: sudo supervisorctl restart ckan-uwsgi:*
+─────────────────────────────────────────────────────────────────────────── */
+
+/* Example: change the top navbar colour */
+/* .navbar { background-color: #05474F !important; } */

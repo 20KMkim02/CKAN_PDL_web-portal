@@ -9,8 +9,18 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6">
+          <!--  page IP/ : ลบ Block กลางและเพิ่ม text informaiton -->
           {% block promoted %}
-            {% snippet 'home/snippets/promoted.html' %}
+          <div class="hero-heading">
+            <h1 class="hero-title">แพลตฟอร์มเชื่อมโยงข้อมูล<br>ทั่วจังหวัดในประเทศไทย</h1>
+            <p class="hero-subtitle">แพลตฟอร์มเชื่อมโยงและบูรณาการข้อมูลระดับจังหวัด เพื่อช่วยยกระดับการบริหารจัดการ ให้มีประสิทธิภาพ ตอบโจทย์การพัฒนา ในทุกพื้นที่</p>
+            {% block hero_search %}
+              <form class="hero-search" action="{% url_for 'dataset.search' %}" method="get">
+                <button type="submit" aria-label="{{ _('ค้นหา') }}"><i class="fa fa-search"></i></button>
+                <input type="text" name="q" placeholder="{{ _('ค้นหาข้อมูลแต่ละจังหวัด') }}" />
+              </form>
+            {% endblock %}
+          </div>
           {% endblock %}
         </div>
         <div class="col-md-6">

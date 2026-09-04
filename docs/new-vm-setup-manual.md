@@ -582,7 +582,7 @@ $C user add member      email=member_user@bdi.or.th password='password1234!'   #
 
 ### 11.2 กำหนด role ใน organization
 
-```sh
+```shv
 api organization_member_create '{"id":"orga","username":"organization_a_admin","role":"admin"}'
 api organization_member_create '{"id":"orga","username":"organization_a_editor","role":"editor"}'
 api organization_member_create '{"id":"orga","username":"organization_a_member","role":"member"}'

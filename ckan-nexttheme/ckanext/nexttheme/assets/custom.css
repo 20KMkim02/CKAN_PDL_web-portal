@@ -2,6 +2,106 @@
    Edit this file to customise the site's look.
    Changes here take effect after: sudo supervisorctl restart ckan-uwsgi:*
 ─────────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;700&display=swap');
+/* IP/ : Context information */
+.hero-heading { width: 40%; }
 
+.hero-title {
+  font-family: 'Mitr', sans-serif;
+  font-weight: 700;
+  background: linear-gradient(90deg, #0F4952, #031624);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.hero-subtitle {
+  font-family: 'Mitr', sans-serif;
+  font-weight: 300;
+}
+/* IP/ ทำให้ info text ทับภาพ */
+.main.hero {
+  position: relative;
+}
+.main.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #F4F8FB 0%, rgba(244,248,251,0.6) 40%, rgba(244,248,251,0) 70%);
+  z-index: 1;
+}
+.main.hero > .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Search-bar */
+.hero-search {
+  display: flex;
+  align-items: center;
+  background-color: #0F4952;
+  border-radius: 33px;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
+}
+.hero-search button {
+  background: none;
+  border: none;
+  color: #fff;
+}
+.hero-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+}
+.hero-search input::placeholder {
+  color: #ffffffcc;
+}
+
+
+/* Header */
+/* apply font family */
+.masthead, .masthead * {
+  font-family: 'Mitr', sans-serif;
+  font-weight: 300;
+  color: #003647 !important;
+}
+/* Header styles spacing */
+.masthead {
+  height: 5vh;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: transparent !important;
+}
+.masthead .navbar { height: 100%; padding: 0; }
+.masthead .container {
+  max-width: 100% !important;
+  padding-right: 1.5rem;
+}
+/* remove focus shadows */
+.btn:focus,
+.btn:active:focus,
+.form-control:focus,
+.navbar-toggler:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+/* Header box component */
+.masthead .main-navbar ul li a {
+  background: transparent !important;
+}
+/* hover -> bold */
+.masthead .main-navbar ul li a:hover {
+  font-weight: 700;
+}
+/* --------------------------------------------------------------------------- */
 /* Example: change the top navbar colour */
 /* .navbar { background-color: #05474F !important; } */
+
+/* Body background */
+body { background-color: #F4F8FB !important; }
+

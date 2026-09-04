@@ -1,0 +1,20 @@
+{% ckan_extends %}
+
+{% block header_site_navigation_tabs %}
+  {{ h.build_nav_main(
+    ('home.index', _('หน้าหลัก')),
+    (dataset_type ~ '.search', _('ค้นหาข้อมูล'), ['dataset', 'resource']),
+    ('showcase_blueprint.index', _('แดชบอร์ด')),
+    ('organization.index', _('องค์กร'), ['organization']),
+    ('group.index', _('กลุ่ม'), ['group']),
+    ('home.about', _('เกี่ยวกับ'))
+  ) }}
+  {% if not c.userobj %}
+  <li>
+    <a href="{{ h.url_for('user.login') }}">{{ _('เข้าสู่ระบบ') }}</a>
+  </li>
+  {% endif %}
+{% endblock %}
+
+{% block header_site_search %}
+{% endblock %}

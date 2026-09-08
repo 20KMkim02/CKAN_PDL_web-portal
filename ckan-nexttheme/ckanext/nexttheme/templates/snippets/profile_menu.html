@@ -1,0 +1,167 @@
+{#
+  ProfileV2 — ปุ่มโปรไฟล์วงกลมมุมขวาบน + เมนู dropdown
+  ไฟล์นี้เป็น "component" ใหม่ ยังไม่ได้ถูกเรียกใช้จากที่ไหน (ไม่ได้แก้ header.html/base.html เดิม)
+  วิธีเอาไปใช้จริง: ใส่ {% snippet 'snippets/profile_menu.html' %} แทนที่ <div class="profile-icon"></div>
+  เดิมใน header.html แล้วรูปวงกลม + เมนูจะโผล่ขึ้นมาแทน
+#}
+
+{# ---------- ส่วนที่ 1: ปุ่มวงกลม (ปิดอยู่ = ProfileV2/Default) ---------- #}
+{# ใช้ <button> ธรรมดา ไอคอน "!" มาจากไฟล์ที่มีอยู่แล้วใน public/images/main_setting.png #}
+<div class="pdlink-profile" id="pdlinkProfile">
+  <button type="button"
+          class="pdlink-profile__trigger"
+          id="pdlinkProfileTrigger"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="pdlinkProfilePanel">
+    <img src="/images/main_setting.png" alt="" aria-hidden="true">
+  </button>
+
+  {# ---------- ส่วนที่ 2: แผง dropdown (เปิดอยู่ = ProfileV2) ---------- #}
+  {# ซ่อนอยู่ด้วย CSS (hidden attribute) ก่อน จะโชว์ตอนกดปุ่มด้านบนเท่านั้น #}
+  <div class="pdlink-profile__panel" id="pdlinkProfilePanel" role="menu" hidden>
+
+    {# ---------- ส่วนที่ 3: รายการเมนูแต่ละอัน ---------- #}
+    {# แต่ละอันคือ 1 แถว: ไอคอน (จาก public/images ที่มีอยู่แล้ว) + ข้อความ + ลิงก์ไปหน้าจริงของ CKAN #}
+    {# route เดียวกับที่ core CKAN header.html ใช้ในแถบ account-masthead เดิม (user.read, dashboard.datasets, user.edit, admin.index, user.logout) #}
+
+    {% if c.userobj %}
+    <a class="pdlink-profile__item" role="menuitem"
+       href="{{ h.url_for('user.read', id=c.userobj.name) }}">
+      <img src="/images/setting&amp;hero_person.png" alt="">
+      <span>{{ _('ผู้ใช้งาน') }}</span>
+    </a>
+
+    <a class="pdlink-profile__item" role="menuitem"
+       href="{{ h.url_for('dashboard.datasets') }}">
+      <img src="/images/setting&amp;hero_overview.png" alt="">
+      <span>{{ _('ภาพรวม') }}</span>
+    </a>
+
+    <a class="pdlink-profile__item" role="menuitem"
+       href="{{ h.url_for('user.edit', id=c.userobj.name) }}">
+      <img src="/images/setting_setting.png" alt="">
+      <span>{{ _('ตั้งค่า') }}</span>
+    </a>
+
+    {% if c.userobj.sysadmin %}
+    <a class="pdlink-profile__item" role="menuitem"
+       href="{{ h.url_for('admin.index') }}">
+      <img src="/images/setting&amp;hero_admin.png" alt="">
+      <span>{{ _('จัดการระบบ') }}</span>
+    </a>
+    {% endif %}
+
+    <a class="pdlink-profile__item pdlink-profile__item--danger" role="menuitem"
+       href="{{ h.url_for('user.logout') }}">
+      <img src="/images/setting_logout.png" alt="">
+      <span>{{ _('ออกจากระบบ') }}</span>
+    </a>
+    {% else %}
+    <a class="pdlink-profile__item" role="menuitem"
+       href="{{ h.url_for('user.login') }}">
+      <img src="/images/setting&amp;hero_person.png" alt="">
+      <span>{{ _('เข้าสู่ระบบ') }}</span>
+    </a>
+    {% endif %}
+
+  </div>
+</div>
+
+{# ---------- ส่วนที่ 4: CSS เฉพาะของ component นี้ ---------- #}
+{# ตั้งใจใส่ไว้ในไฟล์นี้ไฟล์เดียว (ไม่ไปแก้ custom.css เดิม) เพื่อให้ component นี้ย้ายไปวางที่ไหนก็ได้แบบ self-contained #}
+<style>
+/* position:fixed แทน relative — ปุ่มนี้ไม่ได้อยู่ใน header อีกแล้ว (ย้ายไปเรียกจาก
+   home/layout1.html) ต้องการให้ลอยค้างมุมจอตลอด ไม่เลื่อนหายไปตามหน้า */
+/* หน่วยทั้งหมดด้านล่างแปลงเป็น vw/vh แล้ว (เดิมเป็น px/rem คงที่) ให้ scale ตามขนาดจอ */
+.pdlink-profile{
+  position: fixed;
+  top: 1.2vh;
+  right: 1vw;
+  z-index: 1000;
+}
+/*  */
+.pdlink-profile__trigger{
+  width: 2.9vw;
+  height: 2.9vw;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: #ffffff;
+  box-shadow: 4px 6px 6px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+/* ไอปุ่มตกใจที่ทำหน้าที่เป็น setting-button */
+/* ไฟล์จริง main_setting.png คือ 20x55px (ทรงสูงผอม) - ถ้ากำหนดด้วย width มันจะคำนวณ
+   ความสูงตามสัดส่วนแล้วเกินกรอบวงกลม ไปเยอะ (ตามที่เห็นในภาพ) ต้องกำหนดด้วย
+   height แทนถึงจะพอดีกรอบ */
+.pdlink-profile__trigger img{
+  height: 1.4vw;
+  width: auto;
+}
+.pdlink-profile__panel{
+  position: absolute;
+  top: calc(100% + 0.7vw);
+  right: 0;
+  min-width: 14vw;
+  background: #ffffff;
+  border-radius: 1vw;
+  box-shadow: 4px 10px 24px rgba(0,0,0,0.18);
+  padding: 0.5vw;
+  z-index: 50;
+}
+.pdlink-profile__item{
+  display: flex;
+  align-items: center;
+  gap: 0.6vw;
+  padding: 0.5vw 0.6vw;
+  border-radius: 0.6vw;
+  text-decoration: none;
+  color: #0B1B20;
+  font-size: clamp(0.8rem, 0.85vw, 1rem);
+}
+.pdlink-profile__item:hover,
+.pdlink-profile__item:focus-visible{
+  background: #F4F8FB;
+  outline: none;
+}
+.pdlink-profile__item img{
+  width: 1vw;
+  height: 1vw;
+  flex: none;
+}
+.pdlink-profile__item--danger{ color: #A3302B; }
+</style>
+
+{# ---------- ส่วนที่ 5: JS เปิด/ปิด dropdown ---------- #}
+{# แค่ toggle attribute "hidden" ตอนกดปุ่ม + ปิดเองถ้าคลิกนอกกล่อง (ไม่ต้องพึ่ง jQuery) #}
+<script>
+(function () {
+  var wrap    = document.getElementById('pdlinkProfile');
+  var trigger = document.getElementById('pdlinkProfileTrigger');
+  var panel   = document.getElementById('pdlinkProfilePanel');
+  if (!wrap || !trigger || !panel) { return; }
+
+  function closePanel () {
+    panel.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  trigger.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var isOpen = !panel.hidden;
+    panel.hidden = isOpen;              // toggle
+    trigger.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!wrap.contains(e.target)) { closePanel(); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closePanel(); }
+  });
+})();
+</script>

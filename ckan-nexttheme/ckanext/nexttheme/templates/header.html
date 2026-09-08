@@ -1,5 +1,14 @@
 {% ckan_extends %}
 
+{#
+  เมนูหลัก (แทนที่เมนู default ของ CKAN ด้วยเมนูภาษาไทย 7 ปุ่ม)
+  ปุ่มสุดท้าย "เข้าสู่ระบบ" (.btn-login) โชว์เฉพาะตอนยังไม่ login เป็นปุ่มเด่นสีเขียวอมฟ้า
+
+  หมายเหตุ: ปุ่ม ProfileV2/"setting" ไม่ได้อยู่ในเมนูนี้แล้ว — ย้ายไปอยู่ใน
+  home/layout1.html แทน (ลอย fixed อิสระจาก header) เพราะ header เอง
+  ถูกปรับให้เลื่อนหายไปตามการ scroll ตามปกติ (เอา position:sticky ออกแล้วใน custom.css)
+  มีแค่ปุ่ม ProfileV2 ปุ่มเดียวที่ต้อง fixed ค้างอยู่กับจอ
+#}
 {% block header_site_navigation_tabs %}
   {{ h.build_nav_main(
     ('home.index', _('หน้าหลัก')),
@@ -11,10 +20,15 @@
   ) }}
   {% if not c.userobj %}
   <li>
-    <a href="{{ h.url_for('user.login') }}">{{ _('เข้าสู่ระบบ') }}</a>
+    <a class="btn-login" href="{{ h.url_for('user.login') }}">{{ _('เข้าสู่ระบบ') }}</a>
   </li>
   {% endif %}
 {% endblock %}
 
+<!-- ลบ searchbar ด้านขวาออกไป -->
 {% block header_site_search %}
+{% endblock %}
+
+<!-- ลบ setting-bar (account-masthead) ออกไป เพราะปุ่ม ProfileV2 ทำหน้าที่แทนแล้ว -->
+{% block header_account %}
 {% endblock %}

@@ -1,4 +1,5 @@
-0. คำสั่ง restart uwsgi : sudo supervisorctl restart ckan-uwsgi:*
+0. คำสั่ง restart uwsgi : 
+sudo supervisorctl restart ckan-uwsgi:*
 
 1. แก้สี bg #F4F8FB
 2. แก้ header
@@ -33,3 +34,12 @@ Tag : เช่น environment Education traveling economic ,...
 
 [page home] 
 - มีการแสดง จังหวัดที่น่าสนใจในโครงการ เป็น card โชว์พวก metadata ว่ามี dataset ถูก assign ลงในจังหวัดนั้นๆกี่ dataset สามารถกดเข้าไปในcard เพื่อไปหน้า dataset ของจังหวัดนั้นได้
+
+
+หน้าหลัก : กลับไป IP/
+ค้นหาข้อมูล : ไปยัง /dataset (ที่จะมี map)
+แดชบอร์ด : ไปยัง /showcase
+องค์กร : ไปยัง /organization
+กลุ่ม : ไปยัง /group
+เกี่ยวกับ : ไปยัง /about
+เข้าสู่ระบบ : ไปยัง /user/login (กรณียังไม่ได้ login) ปุ่มมี box ครอบ border rounded 33 px 

@@ -1,57 +1,160 @@
-{% if g.search_background %}
-  {% set background = g.search_background %}
-{% else %}
-  {% set background = '/base/images/bg-banner.jpg' %}
-{% endif %}
+{#
+  home/layout1.html — layout ของหน้าแรก (route "/")
+  โครงสร้างปัจจุบัน: [1] ตั้งค่าพื้นหลัง -> [2] ดึงสถิติจริง -> [3] hero (รูป+ไอคอนลอย+heading+search+
+  สถิติ 4 ช่อง+ปุ่ม profile) -> [5] การ์ดจังหวัด (หน้าตา/ตำแหน่งตรง design แล้ว แต่ตัวเลขในการ์ด
+  ยังเป็นข้อมูลตัวอย่างคงที่ รอต่อ API จริงเป็น step ถัดไป)
+#}
+
+{# ---------- [1] พื้นหลัง hero: fix ให้ใช้ banner.png ของโปรเจกต์นี้ตรงๆ ---------- #}
+{% set background = '/images/banner.png' %}
+
+{# ---------- [2] ดึงสถิติจริงจาก CKAN ไว้ใช้ในส่วน [4] ด้านล่าง ---------- #}
+{% set stats = h.get_site_statistics() %}
 
 <div role="main">
-  <div class="main hero" style="background-image: url('{{ background }}');">
+
+  {# ================= [3] HERO: รูปพื้นหลัง + heading + search + ไอคอนลอย + ปุ่ม profile ================= #}
+  <div class="main hero">
+    {# --- [3.0] กล่องรูป banner แยกออกมาต่างหาก กว้างแค่ 70% ของจอ (ชิดขวา) ---
+         เดิมรูปนี้เป็น background ของ .main.hero ทั้งก้อน (เต็มความกว้างจอ) ตอนนี้ย้าย
+         background-image มาไว้ที่ div นี้แทน แล้วจำกัดความกว้างไว้ที่ 70% ตามที่ขอ
+         ส่วน background-size ที่ตั้งไว้ (166.67% = 100/60) คือตัวเลขที่ทำให้กล่องนี้แสดงผล
+         เฉพาะ 60% ซ้ายสุดของรูปต้นฉบับ (crop ส่วนที่เหลือ 40% ฝั่งขวาทิ้งไป) ตามที่ขอ #}
+    <div class="hero-banner" style="background-image: url('{{ background }}');"></div>
+
+    {# --- [3.2] ไอคอนวงกลมลอย + เส้นประเชื่อมจุด เอาออกตามที่ขอแล้ว (ทั้ง .hero-badges/
+         .hero-badge และ .hero-badges__lines ใน custom.css ยังเหลืออยู่เผื่ออยากเอากลับมาทีหลัง
+         แค่ไม่ได้เรียกใช้จาก markup ตรงนี้แล้ว) --- #}
+
     <div class="container">
       <div class="row">
+
+        {# --- [3.1] ฝั่งซ้าย: หัวข้อ + คำอธิบาย + ช่องค้นหา --- #}
         <div class="col-md-6">
-          <!--  page IP/ : ลบ Block กลางและเพิ่ม text informaiton -->
           {% block promoted %}
           <div class="hero-heading">
             <h1 class="hero-title">แพลตฟอร์มเชื่อมโยงข้อมูล<br>ทั่วจังหวัดในประเทศไทย</h1>
             <p class="hero-subtitle">แพลตฟอร์มเชื่อมโยงและบูรณาการข้อมูลระดับจังหวัด เพื่อช่วยยกระดับการบริหารจัดการ ให้มีประสิทธิภาพ ตอบโจทย์การพัฒนา ในทุกพื้นที่</p>
+            {# --- โครงสร้าง search bar ใหม่ตามภาพต้นแบบ: แท่งพื้นขาว + ไอคอนแว่นขยายสีเทา
+                 ทางซ้าย + ปุ่ม "ค้นหา" pill สีเขียวเข้มแยกอยู่ท้ายแท่ง (ของเดิมทำผิดเป็น
+                 พื้นเขียวทึบทั้งแท่งเดียว ไม่มีปุ่มแยก) --- #}
             {% block hero_search %}
               <form class="hero-search" action="{% url_for 'dataset.search' %}" method="get">
-                <button type="submit" aria-label="{{ _('ค้นหา') }}"><i class="fa fa-search"></i></button>
+                <i class="fa fa-search hero-search__icon" aria-hidden="true"></i>
                 <input type="text" name="q" placeholder="{{ _('ค้นหาข้อมูลแต่ละจังหวัด') }}" />
+                <button type="submit" class="hero-search__submit">
+                  {{ _('ค้นหา') }} <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </button>
               </form>
             {% endblock %}
+
+            {# --- [3.1b] สถิติ 4 ช่อง — ย้ายมาไว้ใต้ search bar ตามที่ขอ
+                 (เดิมเป็น section แยกเต็มความกว้างของหน้าอยู่ใต้ hero ทั้งก้อน ดูข้อ [4] เดิม) --- #}
+            <div class="stats-row">
+              <div class="stat-item"><h3>{{ stats.dataset_count }}</h3><p>ชุดข้อมูล</p></div>
+              <div class="stat-item"><h3>{{ stats.showcase_count }}</h3><p>แดชบอร์ด</p></div>
+              <div class="stat-item"><h3>{{ stats.group_count }}</h3><p>ภาคธุรกิจ</p></div>
+              <div class="stat-item"><h3>{{ stats.organization_count }}</h3><p>หน่วยงาน</p></div>
+            </div>
           </div>
           {% endblock %}
         </div>
-        <div class="col-md-6">
-          {% block search %}
-            {% snippet 'home/snippets/search.html', search_facets=search_facets %}
-          {% endblock %}
-          {% block stats %}
-            {% snippet 'home/snippets/stats.html' %}
-          {% endblock %}
-        </div>
+
+      </div>
+    </div>
+
+    {# --- [3.3] ปุ่ม ProfileV2/"setting" — ย้ายมาจาก header.html ตามที่ขอ
+         ปุ่มนี้ position:fixed ลอยติดจอเสมอ (กำหนดใน profile_menu.html เอง)
+         ส่วน header (.masthead) เอา position:sticky ออกแล้ว ปล่อยให้เลื่อนหายไปกับการ scroll ตามปกติ
+         เลยเหลือแค่ปุ่มนี้ปุ่มเดียวที่ fixed ค้างอยู่กับจอ --- #}
+    {% snippet 'snippets/profile_menu.html' %}
+  </div>
+
+  {# ================= [5] การ์ดจังหวัด — ตำแหน่ง/หน้าตาตาม design (ยังเป็นข้อมูลตัวอย่างคงที่) =================
+     ทำเฉพาะ "ตำแหน่ง component" ให้ตรง design ตามที่ขอรอบนี้ - ตัวเลข/หมวดหมู่ในการ์ดยังเป็นข้อมูลตัวอย่าง
+     ไม่ใช่ของจริง เพราะการต่อข้อมูลจริง (org=จังหวัด, group=ภาค, tag=หมวดหมู่) เป็นงานคนละส่วน
+     (ดึงจาก package_search/organization_list จริง) ที่ต้องทำแยกเป็น step ถัดไปตามที่คุยกันไว้ #}
+  {% block featured_group %}
+  <div class="main province-section">
+    <div class="container">
+      <h2 class="province-heading">{{ _('จังหวัดที่น่าสนใจในโครงการ') }} :</h2>
+      <div class="province-cards">
+
+        <article class="province-card">
+          <div class="province-card__count">40</div>
+          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
+          <div class="province-card__title">{{ _('จังหวัดกรุงเทพมหานคร') }}</div>
+          <div class="province-card__data">
+            <span class="cat">การศึกษา</span><span class="val">7</span><span class="cat">สุขภาพ</span><span class="val">3</span>
+            <span class="cat">ท่องเที่ยว</span><span class="val">5</span><span class="cat">เกษตร</span><span class="val">2</span>
+            <span class="cat">เศรษฐกิจ</span><span class="val">2</span><span class="cat">ขยะ</span><span class="val">1</span>
+            <span class="cat">สิ่งแวดล้อม</span><span class="val">18</span><span class="cat">อุบัติเหตุ</span><span class="val">3</span>
+          </div>
+          <div class="province-card__divider"></div>
+          <div class="province-card__footer">
+            <span class="region">ภาคกลาง</span>
+            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
+          </div>
+          <div class="province-card__date">05/09/2569</div>
+        </article>
+
+        <article class="province-card">
+          <div class="province-card__count">20</div>
+          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
+          <div class="province-card__title">{{ _('จังหวัดเชียงใหม่') }}</div>
+          <div class="province-card__data">
+            <span class="cat">การศึกษา</span><span class="val">1</span><span class="cat">สุขภาพ</span><span class="val">2</span>
+            <span class="cat">ท่องเที่ยว</span><span class="val">5</span><span class="cat">เกษตร</span><span class="val">0</span>
+            <span class="cat">เศรษฐกิจ</span><span class="val">2</span><span class="cat">ขยะ</span><span class="val">0</span>
+            <span class="cat">สิ่งแวดล้อม</span><span class="val">12</span><span class="cat">อุบัติเหตุ</span><span class="val">0</span>
+          </div>
+          <div class="province-card__divider"></div>
+          <div class="province-card__footer">
+            <span class="region">ภาคเหนือ</span>
+            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
+          </div>
+          <div class="province-card__date">05/09/2569</div>
+        </article>
+
+        <article class="province-card">
+          <div class="province-card__count">15</div>
+          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
+          <div class="province-card__title">{{ _('จังหวัดขอนแก่น') }}</div>
+          <div class="province-card__data">
+            <span class="cat">เศรษฐกิจ</span><span class="val">3</span><span class="cat">เกษตร</span><span class="val">6</span>
+            <span class="cat">ขยะ</span><span class="val">2</span><span class="cat">อุบัติเหตุ</span><span class="val">4</span>
+            <span class="cat">การศึกษา</span><span class="val">0</span><span class="cat">สุขภาพ</span><span class="val">0</span>
+            <span class="cat">ท่องเที่ยว</span><span class="val">0</span><span class="cat">สิ่งแวดล้อม</span><span class="val">0</span>
+          </div>
+          <div class="province-card__divider"></div>
+          <div class="province-card__footer">
+            <span class="region">ภาคตะวันออกเฉียงเหนือ</span>
+            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
+          </div>
+          <div class="province-card__date">05/09/2569</div>
+        </article>
+
+        <article class="province-card">
+          <div class="province-card__count">28</div>
+          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
+          <div class="province-card__title">{{ _('จังหวัดภูเก็ต') }}</div>
+          <div class="province-card__data">
+            <span class="cat">ท่องเที่ยว</span><span class="val">14</span><span class="cat">สิ่งแวดล้อม</span><span class="val">6</span>
+            <span class="cat">เศรษฐกิจ</span><span class="val">5</span><span class="cat">สุขภาพ</span><span class="val">3</span>
+            <span class="cat">การศึกษา</span><span class="val">0</span><span class="cat">เกษตร</span><span class="val">0</span>
+            <span class="cat">ขยะ</span><span class="val">0</span><span class="cat">อุบัติเหตุ</span><span class="val">0</span>
+          </div>
+          <div class="province-card__divider"></div>
+          <div class="province-card__footer">
+            <span class="region">ภาคใต้</span>
+            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
+          </div>
+          <div class="province-card__date">05/09/2569</div>
+        </article>
+
       </div>
     </div>
   </div>
+  {% endblock %}
 
-  <div class="main module-feeds">
-    <div class="container">
-      {% block featured_group %}
-        {% if h.thai_gdc_get_use_gd_multigroup() and h.thai_gdc_get_group_schemas() != '' %}
-        {% set category_dict = h.scheming_group_schemas() %}
-        {% endif %}
-        {% if category_dict and category_dict.keys()|length %}
-          <div class="row module-content box" style="margin: 3px;margin-bottom: 15px;">
-          {% snippet 'home/snippets/multi_groups.html', category_dict=category_dict %}
-          </div>
-        {% else %}
-          {% set stats = h.get_site_statistics() %}
-          <div class="row">
-          {% snippet 'home/snippets/groups.html', stats=stats %}
-          </div>
-        {% endif %}
-      {% endblock %}
-    </div>
-  </div>
 </div>

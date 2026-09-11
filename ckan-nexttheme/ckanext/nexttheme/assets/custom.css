@@ -261,6 +261,10 @@ body { background-color: #F4F8FB !important; }
   /* padding-top เดิม 4vh บวกกับพื้นที่ว่างที่เหลือใต้ .main.hero (ดูคอมเมนต์ที่ .main.hero
      ด้านบน) รวมกันแล้วกลายเป็น whitespace เห็นได้ชัดก่อนถึงการ์ด ตัดเหลือ 1vh พอกันชนเบาๆ */
   padding: 1vh 0 6vh;
+  /* class .main ของ core CKAN มักตั้ง background (ปกติเป็นสีขาว) มาเอง ทำให้ section นี้
+     สีไม่ตรงกับพื้นหลังหน้าเว็บ (#F4F8FB ที่ตั้งไว้ที่ body ด้านบนในไฟล์นี้) บังคับให้เป็นสี
+     เดียวกันตรงๆ ที่นี่ ใส่ !important กันไว้เผื่อ core มี specificity สูงกว่า/ตั้ง !important เอง */
+  background-color: #F4F8FB !important;
 }
 /* บั๊กที่เจอ: หัวข้อ "จังหวัดที่น่าสนใจ..." กับการ์ดไม่ได้ชิดขอบซ้ายจุดเดียวกับหัวข้อ hero
    ("แพลตฟอร์มเชื่อมโยงข้อมูล...") เพราะ .container ของ section นี้ยังใช้ค่า default ของ

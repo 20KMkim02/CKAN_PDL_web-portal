@@ -10,6 +10,8 @@
 
 {# ---------- [2] ดึงสถิติจริงจาก CKAN ไว้ใช้ในส่วน [4] ด้านล่าง ---------- #}
 {% set stats = h.get_site_statistics() %}
+{% set province_cards = h.nexttheme_province_cards() %}
+
 
 <div role="main">
 
@@ -75,86 +77,40 @@
      ไม่ใช่ของจริง เพราะการต่อข้อมูลจริง (org=จังหวัด, group=ภาค, tag=หมวดหมู่) เป็นงานคนละส่วน
      (ดึงจาก package_search/organization_list จริง) ที่ต้องทำแยกเป็น step ถัดไปตามที่คุยกันไว้ #}
   {% block featured_group %}
-  <div class="main province-section">
-    <div class="container">
-      <h2 class="province-heading">{{ _('จังหวัดที่น่าสนใจในโครงการ') }} :</h2>
-      <div class="province-cards">
-
-        <article class="province-card">
-          <div class="province-card__count">40</div>
-          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
-          <div class="province-card__title">{{ _('จังหวัดกรุงเทพมหานคร') }}</div>
-          <div class="province-card__data">
-            <span class="cat">การศึกษา</span><span class="val">7</span><span class="cat">สุขภาพ</span><span class="val">3</span>
-            <span class="cat">ท่องเที่ยว</span><span class="val">5</span><span class="cat">เกษตร</span><span class="val">2</span>
-            <span class="cat">เศรษฐกิจ</span><span class="val">2</span><span class="cat">ขยะ</span><span class="val">1</span>
-            <span class="cat">สิ่งแวดล้อม</span><span class="val">18</span><span class="cat">อุบัติเหตุ</span><span class="val">3</span>
-          </div>
-          <div class="province-card__divider"></div>
-          <div class="province-card__footer">
-            <span class="region">ภาคกลาง</span>
-            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
-          </div>
-          <div class="province-card__date">05/09/2569</div>
-        </article>
-
-        <article class="province-card">
-          <div class="province-card__count">20</div>
-          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
-          <div class="province-card__title">{{ _('จังหวัดเชียงใหม่') }}</div>
-          <div class="province-card__data">
-            <span class="cat">การศึกษา</span><span class="val">1</span><span class="cat">สุขภาพ</span><span class="val">2</span>
-            <span class="cat">ท่องเที่ยว</span><span class="val">5</span><span class="cat">เกษตร</span><span class="val">0</span>
-            <span class="cat">เศรษฐกิจ</span><span class="val">2</span><span class="cat">ขยะ</span><span class="val">0</span>
-            <span class="cat">สิ่งแวดล้อม</span><span class="val">12</span><span class="cat">อุบัติเหตุ</span><span class="val">0</span>
-          </div>
-          <div class="province-card__divider"></div>
-          <div class="province-card__footer">
-            <span class="region">ภาคเหนือ</span>
-            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
-          </div>
-          <div class="province-card__date">05/09/2569</div>
-        </article>
-
-        <article class="province-card">
-          <div class="province-card__count">15</div>
-          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
-          <div class="province-card__title">{{ _('จังหวัดขอนแก่น') }}</div>
-          <div class="province-card__data">
-            <span class="cat">เศรษฐกิจ</span><span class="val">3</span><span class="cat">เกษตร</span><span class="val">6</span>
-            <span class="cat">ขยะ</span><span class="val">2</span><span class="cat">อุบัติเหตุ</span><span class="val">4</span>
-            <span class="cat">การศึกษา</span><span class="val">0</span><span class="cat">สุขภาพ</span><span class="val">0</span>
-            <span class="cat">ท่องเที่ยว</span><span class="val">0</span><span class="cat">สิ่งแวดล้อม</span><span class="val">0</span>
-          </div>
-          <div class="province-card__divider"></div>
-          <div class="province-card__footer">
-            <span class="region">ภาคตะวันออกเฉียงเหนือ</span>
-            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
-          </div>
-          <div class="province-card__date">05/09/2569</div>
-        </article>
-
-        <article class="province-card">
-          <div class="province-card__count">28</div>
-          <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
-          <div class="province-card__title">{{ _('จังหวัดภูเก็ต') }}</div>
-          <div class="province-card__data">
-            <span class="cat">ท่องเที่ยว</span><span class="val">14</span><span class="cat">สิ่งแวดล้อม</span><span class="val">6</span>
-            <span class="cat">เศรษฐกิจ</span><span class="val">5</span><span class="cat">สุขภาพ</span><span class="val">3</span>
-            <span class="cat">การศึกษา</span><span class="val">0</span><span class="cat">เกษตร</span><span class="val">0</span>
-            <span class="cat">ขยะ</span><span class="val">0</span><span class="cat">อุบัติเหตุ</span><span class="val">0</span>
-          </div>
-          <div class="province-card__divider"></div>
-          <div class="province-card__footer">
-            <span class="region">ภาคใต้</span>
-            <span class="region-badge"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
-          </div>
-          <div class="province-card__date">05/09/2569</div>
-        </article>
-
+    <div class="main province-section">
+      <div class="container">
+        <h2 class="province-heading">{{ _('จังหวัดที่น่าสนใจในโครงการ') }} :</h2>
+        <div class="province-cards">
+          {% for card in province_cards %}
+            {% if card %}
+            <article class="province-card">
+              <div class="province-card__count">{{ card.dataset_count }}</div>
+              <div class="province-card__count-label">{{ _('ชุดข้อมูล') }}</div>
+              <div class="province-card__title">{{ card.org_title }}</div>
+              <div class="province-card__data">
+                {% for tag_name, tag_count in card.tags %}
+                  <span class="cat">{{ tag_name }}</span><span class="val">{{ tag_count }}</span>
+                {% endfor %}
+              </div>
+              <div class="province-card__divider"></div>
+              <div class="province-card__footer">
+                <span class="region">ภาค{{ card.region }}</span>
+                {# เดิมเป็น <span> เฉยๆ ไม่มี href เลยกดแล้วไม่ไปไหน (แค่ไอคอนตกแต่ง)
+                   เปลี่ยนเป็น <a> ลิงก์ไปหน้า organization ของจังหวัดนั้นจริงๆ ตามที่ต้องการ #}
+                <a class="region-badge" href="{{ h.url_for('organization.read', id=card.org_name) }}" aria-label="{{ _('ไปยังหน้า') ~ ' ' ~ card.org_title }}"><svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></a>
+              </div>
+              <div class="province-card__date">{{ h.render_datetime(card.last_updated, '%d/%m/%Y') if card.last_updated else '-' }}</div>
+            </article>
+            {% else %}
+            <article class="province-card province-card--empty">
+              <div class="province-card__title">{{ _('ยังไม่มีข้อมูลในภาคนี้') }}</div>
+            </article>
+            {% endif %}
+          {% endfor %}
+        </div>
       </div>
     </div>
-  </div>
   {% endblock %}
+
 
 </div>

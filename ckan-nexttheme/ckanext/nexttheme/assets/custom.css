@@ -194,21 +194,41 @@
   font-weight: 300;
   color: #003647 !important;
 }
+/* กันไอคอน Font Awesome ใน header โดนกฎด้านบนเปลี่ยนเป็นฟอนต์ Mitr / น้ำหนัก 300 (ไอคอนแบบ
+   solid ต้องใช้ฟอนต์ของ Font Awesome ที่น้ำหนัก 900 ไม่งั้นกลายเป็นกล่องเปล่า) ตอนนี้ไม่พังเพราะ
+   ไฟล์ fontawesome.css บังเอิญโหลดทีหลัง custom.css - selector นี้เจาะจงกว่า จึงไม่ต้องพึ่งลำดับนั้น */
+.masthead .fa,
+.masthead .fa-solid {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
 /* Header styles spacing */
 /* เอา position:sticky ออก - header เลื่อนหายไปตามการ scroll ปกติแล้วตามที่ขอ
    (ปุ่ม ProfileV2 ที่ต้อง fixed ค้างจอ ถูกย้ายไปอยู่นอก header ในหน้า home/layout1.html
    และกำหนด position:fixed ของตัวเองใน profile_menu.html แทน) */
+/* เดิมใช้ height:5vh ตายตัว แต่ของข้างใน (โลโก้ 60px / ลิงก์เมนู) เป็น px ของ core
+   พอจอเตี้ย 5vh เหลือแค่ ~30px โลโก้เลยล้นกรอบไปทับ hero - เปลี่ยนเป็น min-height
+   ให้ header สูงอย่างน้อย 5vh แต่ยืดตามเนื้อหาข้างในได้ (รวมถึงตอนเปิดเมนูพับบนจอแคบ) */
 .masthead {
-  height: 5vh;
+  min-height: 5vh;
   padding: 0;
   background-color: transparent !important;
 }
-.masthead .navbar { height: 100%; padding: 0; }
+.masthead .navbar { min-height: 5vh; padding: 0.6vh 0; }
+/* โลโก้: core ล็อกไว้ max-height:60px ตายตัว - เปลี่ยนให้ย่อ/ขยายตามความกว้างจอ
+   (เพดานบน 3.75rem = 60px เท่าของเดิม จอใหญ่หน้าตาไม่เปลี่ยน แค่จอเล็กจะเล็กลงตาม) */
+.masthead .navbar .logo img {
+  max-height: clamp(1.75rem, 3.2vw, 3.75rem);
+  width: auto;
+}
 .masthead .container {
   max-width: 100% !important;
-  /* เผื่อพื้นที่ด้านขวาให้กว้างขึ้น (จากเดิม) กันปุ่ม ProfileV2 ที่ลอย fixed อยู่มุมขวาบน
-     (top/right ใน profile_menu.html) มาทับ/ชิดกับ "เกี่ยวกับ"/ปุ่มเข้าสู่ระบบ ในแถบเมนูมากเกินไป */
-  padding-right: 4.6vw;
+  /* เดิม 4.6vw เผื่อที่ให้ปุ่ม ProfileV2 ที่เคยลอย fixed ทับมุมขวาบน ตอนนี้ปุ่มย้ายเข้ามา
+     อยู่ในแถบ header เองแล้ว ไม่ต้องเผื่อที่อีก - ใช้ 1vw เท่าขอบซ้ายให้สมดุล */
+  padding-right: 1vw;
+  /* ขอบซ้ายเดิมเป็น 0.75rem ตายตัวของ Bootstrap .container - 1vw ได้ระยะใกล้เคียงเดิม
+     บนจอทั่วไป (~13px ที่จอกว้าง 1280px) แต่ย่อ/ขยายตามจอ */
+  padding-left: 1vw;
 }
 /* remove focus shadows */
 .btn:focus,
@@ -219,22 +239,103 @@
   outline: none !important;
 }
 /* Header box component */
+/* ขนาดตัวอักษร/ระยะห่างของเมนู: เดิมมาจาก core ทั้งหมดเป็นค่าตายตัว (padding 0.6rem 0.9rem,
+   ul padding-right 20px, li margin-right 2px, ตัวอักษร 1rem) เมนู 7 ปุ่มเลยกินความกว้างเท่าเดิม
+   ทุกจอ จอไม่ใหญ่มากเลยเบียดกันไม่พอที่ - เปลี่ยนให้ย่อตามความกว้างจอ */
+.masthead .main-navbar ul {
+  padding-right: 1vw;
+}
+.masthead .main-navbar ul li {
+  margin-right: 0.15vw;
+}
 .masthead .main-navbar ul li a {
   background: transparent !important;
+  font-size: clamp(0.8rem, 0.95vw, 1.05rem);
+  padding: 0.6vh 0.9vw;
 }
 /* hover -> bold */
 .masthead .main-navbar ul li a:hover {
   font-weight: 700;
 }
 
-.masthead .main-navbar ul li a.btn-login {
+/* ช่องปุ่มขวาสุดของ header (ดู header.html): login แล้ว = ปุ่มโปรไฟล์ / ยังไม่ login = ปุ่มเข้าสู่ระบบ
+   อยู่นอกเมนูพับ จึงเห็นตลอดทุกขนาดจอ
+   - จอแคบ: margin-left:auto ดันช่องนี้ (และแฮมเบอร์เกอร์ที่ตามมา) ไปชิดขวา เมนูพับขึ้นบรรทัดใหม่
+   - จอกว้าง (>=992px): ใน DOM ช่องนี้อยู่ก่อนเมนู เลยใช้ order:3 ย้ายไปไว้ท้ายสุดหลังเมนูแทน */
+.masthead .header-account-slot {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.masthead .navbar-toggler {
+  margin-left: 1.2vw;
+}
+@media (min-width: 992px) {
+  .masthead .header-account-slot {
+    order: 3;
+    margin-left: 1vw;
+  }
+}
+
+/* ปุ่มเข้าสู่ระบบ: เดิมเป็น <li> ในรายการเมนู (selector เดิม .main-navbar ul li a.btn-login)
+   ตอนนี้ย้ายออกมาอยู่ในช่องปุ่มขวาสุดแล้ว selector เลยต้องเปลี่ยนตาม */
+.masthead .header-account-slot .btn-login {
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
   background: #0F4952 !important;
   color: #fff !important;
-  border-radius: 1.7vw;
+  font-size: clamp(0.8rem, 0.95vw, 1.05rem);
+  border-radius: 999px;
   padding: 0.7vh 1.2vw;
 }
 .masthead .btn-login:hover {
   background: #0A363D !important;
+}
+/* กฎ .masthead * ด้านบนบังคับสีทุกอย่างใน header เป็น #003647 ด้วย !important ซึ่งตอนนี้ไปโดน
+   เมนู dropdown ของปุ่มโปรไฟล์ด้วย (เพราะย้ายเข้ามาอยู่ใน header) - คืนสีแดงให้ "ออกจากระบบ" */
+.masthead .pdlink-profile__item--danger,
+.masthead .pdlink-profile__item--danger * {
+  color: #A3302B !important;
+}
+
+/* ปุ่มแฮมเบอร์เกอร์ (โผล่เมื่อจอกว้างไม่ถึง 992px ตาม navbar-expand-lg ของ Bootstrap)
+   บั๊กเดิม: thai_gdc ทำพื้นปุ่มเป็น #003647 แล้วกฎ .masthead * ด้านบนก็บังคับไอคอน
+   ให้เป็น #003647 ด้วย !important เหมือนกัน ไอคอนเลยกลืนไปกับพื้นปุ่ม มองไม่เห็น
+   เมนูทั้งแถบเลยดูเหมือน "หายไป" บนจอเล็ก - ให้ไอคอนเป็นสีขาว (selector เจาะจงกว่า
+   .masthead * จึงชนะ !important ของกฎนั้นได้) */
+.masthead .navbar-toggler {
+  border: none;
+  border-radius: 999px;
+  padding: 0.6vh 1.6vw;
+}
+.masthead .navbar-toggler .fa {
+  color: #fff !important;
+  font-size: clamp(1rem, 2.4vw, 1.4rem);
+}
+
+/* เมนูตอนพับ (จอแคบกว่า 992px): core ใช้ padding 0.5rem 1rem ตายตัว และไม่มีพื้นหลัง
+   - ทำเป็นแผงสีขาวแยกจากพื้นหน้าเว็บให้อ่านง่าย ระยะห่างเป็นหน่วยตามจอ
+   (ใส่ padding ที่ ul ไม่ใส่ที่ .collapse เอง เพราะ Bootstrap เตือนว่า padding บน
+   .collapse ทำให้แอนิเมชันตอนเปิด/ปิดกระตุก) */
+@media (max-width: 991.98px) {
+  .masthead .main-navbar .navbar-nav {
+    background: #fff;
+    border-radius: 2.5vw;
+    box-shadow: 0 4px 16px rgba(15, 73, 82, 0.12);
+    margin-top: 1vh;
+    padding: 1vh 2vw;
+  }
+  .masthead .main-navbar ul li a {
+    font-size: clamp(0.95rem, 3.2vw, 1.1rem);
+    padding: 1vh 3vw;
+  }
+  /* ปุ่มเข้าสู่ระบบไม่ได้อยู่ในเมนูพับแล้ว (อยู่ข้างแฮมเบอร์เกอร์) แต่ padding แนวนอน 1.2vw
+     บนจอแคบเหลือแค่ ~5px ชิดตัวอักษรเกินไป - ขยายให้กดง่ายบนมือถือ */
+  .masthead .header-account-slot .btn-login {
+    font-size: clamp(0.85rem, 3vw, 1rem);
+    padding: 0.8vh 3.5vw;
+  }
 }
 /* --------------------------------------------------------------------------- */
 /* Example: change the top navbar colour */

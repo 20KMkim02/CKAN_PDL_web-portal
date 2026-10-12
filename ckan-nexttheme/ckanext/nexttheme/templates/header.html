@@ -1,34 +1,71 @@
 {% ckan_extends %}
 
 {#
-  เมนูหลัก (แทนที่เมนู default ของ CKAN ด้วยเมนูภาษาไทย 7 ปุ่ม)
-  ปุ่มสุดท้าย "เข้าสู่ระบบ" (.btn-login) โชว์เฉพาะตอนยังไม่ login เป็นปุ่มเด่นสีเขียวอมฟ้า
+  header ของทุกหน้า (ใช้ร่วมกันทั้งเว็บ ไม่ใช่แค่หน้าแรก)
 
-  หมายเหตุ: ปุ่ม ProfileV2/"setting" ไม่ได้อยู่ในเมนูนี้แล้ว — ย้ายไปอยู่ใน
-  home/layout1.html แทน (ลอย fixed อิสระจาก header) เพราะ header เอง
-  ถูกปรับให้เลื่อนหายไปตามการ scroll ตามปกติ (เอา position:sticky ออกแล้วใน custom.css)
-  มีแค่ปุ่ม ProfileV2 ปุ่มเดียวที่ต้อง fixed ค้างอยู่กับจอ
+  override block header_wrapper ทั้งก้อน แทนการ override ทีละ block ย่อยแบบเดิม เพราะ
+  block ย่อยที่ core เปิดให้ override (header_site_navigation_tabs / header_site_search)
+  อยู่ "ข้างใน" ส่วนเมนูที่พับได้ (.navbar-collapse) ทั้งหมด ถ้าใส่ปุ่มโปรไฟล์ไว้ตรงนั้น
+  บนจอแคบกว่า 992px ปุ่มจะไปซ่อนอยู่หลังแฮมเบอร์เกอร์ด้วย ต้องคุม markup เองถึงจะวาง
+  ช่องปุ่ม (.header-account-slot) ไว้นอกเมนูพับ ให้เห็นตลอดทุกขนาดจอได้
+
+  สิ่งที่ตัดออกจาก header ของ core โดยตั้งใจ:
+  - แถบ account-masthead ด้านบน (ปุ่มโปรไฟล์ทำหน้าที่แทนแล้ว)
+  - ช่องค้นหาด้านขวา (ขอให้เอาออกตั้งแต่แรก)
+  extension อื่นที่ override header.html (showcase / opendstats / activity) แก้แค่
+  block ที่ถูกตัดหรือเขียนทับไปแล้วตั้งแต่ก่อนหน้านี้ จึงไม่มีอะไรหายเพิ่มจากการเปลี่ยนนี้
 #}
-{% block header_site_navigation_tabs %}
-  {{ h.build_nav_main(
-    ('home.index', _('หน้าหลัก')),
-    (dataset_type ~ '.search', _('ค้นหาข้อมูล'), ['dataset', 'resource']),
-    ('showcase_blueprint.index', _('แดชบอร์ด')),
-    ('organization.index', _('องค์กร'), ['organization']),
-    ('group.index', _('กลุ่ม'), ['group']),
-    ('home.about', _('เกี่ยวกับ'))
-  ) }}
-  {% if not c.userobj %}
-  <li>
-    <a class="btn-login" href="{{ h.url_for('user.login') }}">{{ _('เข้าสู่ระบบ') }}</a>
-  </li>
-  {% endif %}
-{% endblock %}
+{% block header_wrapper %}
+<header class="masthead">
+  <div class="container">
+    {% block header_debug %}{% if g.debug and not g.debug_supress_header %}
+    <div class="debug">Blueprint : {{ g.blueprint }}<br />View : {{ g.view }}</div>
+    {% endif %}{% endblock %}
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <hgroup class="{{ g.header_class }} navbar-left">
+        {% block header_logo %}
+        {% if g.site_logo %}
+        <a class="logo" href="{{ h.url_for('home.index') }}">
+          <img src="{{ h.url_for_static_or_external(g.site_logo) }}" alt="{{ g.site_title }}" title="{{ g.site_title }}" />
+        </a>
+        {% else %}
+        <h1><a href="{{ h.url_for('home.index') }}">{{ g.site_title }}</a></h1>
+        {% endif %}
+        {% endblock %}
+      </hgroup>
 
-<!-- ลบ searchbar ด้านขวาออกไป -->
-{% block header_site_search %}
-{% endblock %}
+      {# ช่องปุ่มขวาสุด: login แล้ว = ปุ่มโปรไฟล์ (dropdown) / ยังไม่ login = ปุ่มเข้าสู่ระบบ
+         อยู่นอก .navbar-collapse จึงไม่ถูกพับเก็บบนจอแคบ
+         ลำดับใน DOM อยู่ก่อนปุ่มแฮมเบอร์เกอร์ จอแคบจะเรียง [โลโก้ ... ปุ่มนี้][แฮมเบอร์เกอร์]
+         ส่วนจอกว้าง custom.css ใช้ order ย้ายไปไว้ท้ายสุดหลังเมนู #}
+      <div class="header-account-slot">
+        {% if c.userobj %}
+          {% snippet 'snippets/profile_menu.html' %}
+        {% else %}
+          <a class="btn-login" href="{{ h.url_for('user.login') }}">{{ _('เข้าสู่ระบบ') }}</a>
+        {% endif %}
+      </div>
 
-<!-- ลบ setting-bar (account-masthead) ออกไป เพราะปุ่ม ProfileV2 ทำหน้าที่แทนแล้ว -->
-{% block header_account %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navigation-toggle"
+        aria-controls="main-navigation-toggle" aria-expanded="false" aria-label="{{ _('Toggle navigation') }}">
+        <span class="fa fa-bars"></span>
+      </button>
+
+      <div class="main-navbar collapse navbar-collapse" id="main-navigation-toggle">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          {% block header_site_navigation_tabs %}
+          {{ h.build_nav_main(
+            ('home.index', _('หน้าหลัก')),
+            (dataset_type ~ '.search', _('ค้นหาข้อมูล'), ['dataset', 'resource']),
+            ('showcase_blueprint.index', _('แดชบอร์ด')),
+            ('organization.index', _('องค์กร'), ['organization']),
+            ('group.index', _('กลุ่ม'), ['group']),
+            ('home.about', _('เกี่ยวกับ'))
+          ) }}
+          {% endblock %}
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
 {% endblock %}

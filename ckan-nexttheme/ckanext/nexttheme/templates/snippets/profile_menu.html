@@ -1,20 +1,23 @@
 {#
-  ProfileV2 — ปุ่มโปรไฟล์วงกลมมุมขวาบน + เมนู dropdown
-  ไฟล์นี้เป็น "component" ใหม่ ยังไม่ได้ถูกเรียกใช้จากที่ไหน (ไม่ได้แก้ header.html/base.html เดิม)
-  วิธีเอาไปใช้จริง: ใส่ {% snippet 'snippets/profile_menu.html' %} แทนที่ <div class="profile-icon"></div>
-  เดิมใน header.html แล้วรูปวงกลม + เมนูจะโผล่ขึ้นมาแทน
+  ProfileV2 — ปุ่มโปรไฟล์วงกลม + เมนู dropdown
+  ถูกเรียกจาก header.html (ช่อง .header-account-slot) เฉพาะตอน login แล้วเท่านั้น
+  จึงโผล่ทุกหน้าที่มี header - ตอนยังไม่ login header จะโชว์ปุ่ม "เข้าสู่ระบบ" แทนไฟล์นี้
+  (branch {% else %} ด้านล่างเก็บไว้กันพลาดเผื่อมีที่อื่นเรียกไฟล์นี้ตรงๆ ตอนยังไม่ login)
 #}
 
 {# ---------- ส่วนที่ 1: ปุ่มวงกลม (ปิดอยู่ = ProfileV2/Default) ---------- #}
-{# ใช้ <button> ธรรมดา ไอคอน "!" มาจากไฟล์ที่มีอยู่แล้วใน public/images/main_setting.png #}
+{# ไอคอนทั้งหมดในไฟล์นี้ใช้ Font Awesome 6 Free ที่ CKAN โหลดมาให้ทุกหน้าอยู่แล้ว
+   (เดิมเป็นไฟล์ PNG ใน public/images ซึ่งลบไปแล้ว) - สี/ขนาดคุมด้วย CSS color/font-size ได้ตรงๆ
+   ปุ่มไม่มีข้อความ เลยต้องมี aria-label ให้ screen reader รู้ว่าปุ่มนี้คืออะไร #}
 <div class="pdlink-profile" id="pdlinkProfile">
   <button type="button"
           class="pdlink-profile__trigger"
           id="pdlinkProfileTrigger"
+          aria-label="{{ _('เมนูผู้ใช้') }}"
           aria-haspopup="true"
           aria-expanded="false"
           aria-controls="pdlinkProfilePanel">
-    <img src="/images/main_setting.png" alt="" aria-hidden="true">
+    <i class="fa-solid fa-sliders" aria-hidden="true"></i>
   </button>
 
   {# ---------- ส่วนที่ 2: แผง dropdown (เปิดอยู่ = ProfileV2) ---------- #}
@@ -22,45 +25,46 @@
   <div class="pdlink-profile__panel" id="pdlinkProfilePanel" role="menu" hidden>
 
     {# ---------- ส่วนที่ 3: รายการเมนูแต่ละอัน ---------- #}
-    {# แต่ละอันคือ 1 แถว: ไอคอน (จาก public/images ที่มีอยู่แล้ว) + ข้อความ + ลิงก์ไปหน้าจริงของ CKAN #}
+    {# แต่ละอันคือ 1 แถว: ไอคอน Font Awesome + ข้อความ + ลิงก์ไปหน้าจริงของ CKAN #}
     {# route เดียวกับที่ core CKAN header.html ใช้ในแถบ account-masthead เดิม (user.read, dashboard.datasets, user.edit, admin.index, user.logout) #}
 
     {% if c.userobj %}
     <a class="pdlink-profile__item" role="menuitem"
        href="{{ h.url_for('user.read', id=c.userobj.name) }}">
-      <img src="/images/setting&amp;hero_person.png" alt="">
+      <i class="fa-solid fa-user" aria-hidden="true"></i>
       <span>{{ _('ผู้ใช้งาน') }}</span>
     </a>
 
     <a class="pdlink-profile__item" role="menuitem"
        href="{{ h.url_for('dashboard.datasets') }}">
-      <img src="/images/setting&amp;hero_overview.png" alt="">
+      <i class="fa-solid fa-cloud" aria-hidden="true"></i>
       <span>{{ _('ภาพรวม') }}</span>
     </a>
 
     <a class="pdlink-profile__item" role="menuitem"
        href="{{ h.url_for('user.edit', id=c.userobj.name) }}">
-      <img src="/images/setting_setting.png" alt="">
+      <i class="fa-solid fa-gear" aria-hidden="true"></i>
       <span>{{ _('ตั้งค่า') }}</span>
     </a>
 
     {% if c.userobj.sysadmin %}
     <a class="pdlink-profile__item" role="menuitem"
        href="{{ h.url_for('admin.index') }}">
-      <img src="/images/setting&amp;hero_admin.png" alt="">
+      <i class="fa-solid fa-computer-mouse" aria-hidden="true"></i>
       <span>{{ _('จัดการระบบ') }}</span>
     </a>
     {% endif %}
 
     <a class="pdlink-profile__item pdlink-profile__item--danger" role="menuitem"
        href="{{ h.url_for('user.logout') }}">
-      <img src="/images/setting_logout.png" alt="">
+      <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
       <span>{{ _('ออกจากระบบ') }}</span>
     </a>
     {% else %}
+    {# ไม่มีในรายการไอคอนที่ขอ - ใช้ลูกศรเข้า (คู่กับไอคอนออกจากระบบ) #}
     <a class="pdlink-profile__item" role="menuitem"
        href="{{ h.url_for('user.login') }}">
-      <img src="/images/setting&amp;hero_person.png" alt="">
+      <i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i>
       <span>{{ _('เข้าสู่ระบบ') }}</span>
     </a>
     {% endif %}
@@ -71,19 +75,18 @@
 {# ---------- ส่วนที่ 4: CSS เฉพาะของ component นี้ ---------- #}
 {# ตั้งใจใส่ไว้ในไฟล์นี้ไฟล์เดียว (ไม่ไปแก้ custom.css เดิม) เพื่อให้ component นี้ย้ายไปวางที่ไหนก็ได้แบบ self-contained #}
 <style>
-/* position:fixed แทน relative — ปุ่มนี้ไม่ได้อยู่ใน header อีกแล้ว (ย้ายไปเรียกจาก
-   home/layout1.html) ต้องการให้ลอยค้างมุมจอตลอด ไม่เลื่อนหายไปตามหน้า */
-/* หน่วยทั้งหมดด้านล่างแปลงเป็น vw/vh แล้ว (เดิมเป็น px/rem คงที่) ให้ scale ตามขนาดจอ */
+/* กลับมาเป็น position:relative - ปุ่มย้ายเข้าไปอยู่ในแถบ header (header.html) แล้วตามที่ขอ
+   ไม่ได้ลอย fixed ค้างมุมจอเหมือนตอนอยู่ใน home/layout1.html อีก
+   relative ยังจำเป็น: เป็นจุดอ้างอิงให้แผง dropdown (position:absolute) โผล่ใต้ปุ่มพอดี */
+/* ขนาดยังอิง vw แต่ใส่ clamp() กันเล็กเกิน - เดิม 2.9vw ล้วน บนจอมือถือกว้าง 400px
+   ปุ่มเหลือ ~12px กดไม่ได้ ตอนนี้ปุ่มโผล่บนมือถือด้วย (ไม่ถูกพับเก็บ) เลยต้องมีขั้นต่ำ */
 .pdlink-profile{
-  position: fixed;
-  top: 1.2vh;
-  right: 1vw;
+  position: relative;
   z-index: 1000;
 }
-/*  */
 .pdlink-profile__trigger{
-  width: 2.9vw;
-  height: 2.9vw;
+  width: clamp(2.1rem, 2.9vw, 3.2rem);
+  height: clamp(2.1rem, 2.9vw, 3.2rem);
   border-radius: 50%;
   border: none;
   padding: 0;
@@ -94,31 +97,29 @@
   justify-content: center;
   cursor: pointer;
 }
-/* ไอปุ่มตกใจที่ทำหน้าที่เป็น setting-button */
-/* ไฟล์จริง main_setting.png คือ 20x55px (ทรงสูงผอม) - ถ้ากำหนดด้วย width มันจะคำนวณ
-   ความสูงตามสัดส่วนแล้วเกินกรอบวงกลม ไปเยอะ (ตามที่เห็นในภาพ) ต้องกำหนดด้วย
-   height แทนถึงจะพอดีกรอบ */
-.pdlink-profile__trigger img{
-  height: 1.4vw;
-  width: auto;
+/* ไอคอนในปุ่มวงกลม (fa-sliders) - เป็น font เลยคุมขนาดด้วย font-size แทน height ของรูปแบบเดิม
+   สีมาจากกฎ .masthead * ใน custom.css (#003647) เพราะปุ่มนี้อยู่ใน header */
+.pdlink-profile__trigger i{
+  font-size: clamp(0.95rem, 1.2vw, 1.35rem);
 }
 .pdlink-profile__panel{
   position: absolute;
   top: calc(100% + 0.7vw);
   right: 0;
-  min-width: 14vw;
+  /* เดิม 14vw ล้วน บนมือถือเหลือ ~56px ข้อความเมนูล้น - ใส่ขั้นต่ำ/เพดานไว้ */
+  min-width: clamp(11rem, 14vw, 16rem);
   background: #ffffff;
-  border-radius: 1vw;
+  border-radius: clamp(0.6rem, 1vw, 1.1rem);
   box-shadow: 4px 10px 24px rgba(0,0,0,0.18);
-  padding: 0.5vw;
+  padding: clamp(0.35rem, 0.5vw, 0.6rem);
   z-index: 50;
 }
 .pdlink-profile__item{
   display: flex;
   align-items: center;
-  gap: 0.6vw;
-  padding: 0.5vw 0.6vw;
-  border-radius: 0.6vw;
+  gap: clamp(0.5rem, 0.6vw, 0.75rem);
+  padding: clamp(0.45rem, 0.5vw, 0.6rem) clamp(0.55rem, 0.6vw, 0.75rem);
+  border-radius: clamp(0.4rem, 0.6vw, 0.7rem);
   text-decoration: none;
   color: #0B1B20;
   font-size: clamp(0.8rem, 0.85vw, 1rem);
@@ -128,9 +129,12 @@
   background: #F4F8FB;
   outline: none;
 }
-.pdlink-profile__item img{
-  width: 1vw;
-  height: 1vw;
+/* ไอคอนแต่ละตัวใน Font Awesome กว้างไม่เท่ากัน (เช่น fa-user แคบกว่า fa-computer-mouse)
+   ล็อกความกว้างช่องไอคอนไว้เท่ากันทุกแถว + จัดกึ่งกลาง ข้อความเมนูจะได้เริ่มตรงแนวเดียวกัน */
+.pdlink-profile__item i{
+  width: 1.25em;
+  text-align: center;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
   flex: none;
 }
 .pdlink-profile__item--danger{ color: #A3302B; }

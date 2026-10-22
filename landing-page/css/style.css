@@ -1,0 +1,136 @@
+/* ค่าสี/easing ด้านล่างเป็นค่าเริ่มต้น — main.js จะเขียนทับจาก CONFIG ตอนโหลด */
+:root {
+  --bg: #0a0a0a;
+  --dot: rgba(255, 255, 255, 0.26);
+  --accent: #DE532E;
+  --text: #ffffff;
+  --ease-out: cubic-bezier(0.05, 0.9, 0.1, 1);
+  --ease-pop: cubic-bezier(0.34, 1.7, 0.64, 1);
+  --fade-ms: 900ms;
+  --pop-ms: 600ms;
+  --dot-gap: 48px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); }
+body { font-family: Prompt, Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+.track { position: relative; height: 4200px; }
+
+.stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--dot) 1px, transparent 1.6px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px);
+  background-size: var(--dot-gap) var(--dot-gap), 100% 4px;
+}
+
+.progress { position: absolute; left: 0; top: 0; height: 3px; width: 0; background: var(--accent); z-index: 10; }
+
+/* ---------- 3D map ---------- */
+.scene { position: absolute; inset: 0; }
+.map {
+  position: absolute; left: 50%; top: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.map-layer { position: absolute; inset: 0; width: 100%; height: 100%; }
+.map-outline {
+  filter: drop-shadow(0 2px 0 #a6a6a6) drop-shadow(0 4px 0 #5a5a5a) drop-shadow(0 0 14px rgba(255,255,255,.35));
+}
+.map-provinces { opacity: 0; }
+.links { overflow: visible; pointer-events: none; }
+.links path { fill: none; stroke: #fff; stroke-linecap: round; }
+
+.pin-base {
+  position: absolute; height: 10px; margin-top: -5px; border-radius: 50%;
+  background: rgba(255,255,255,.6); filter: blur(2px);
+  opacity: 0; transition: opacity var(--fade-ms) var(--ease-out);
+}
+
+/* ---------- upright pins (2D overlay) ---------- */
+.pins { position: absolute; inset: 0; pointer-events: none; }
+.pin { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform; }
+.pin-body {
+  position: absolute; transform-origin: 50% 100%;
+  transform: scale(0); opacity: 0;
+  transition: transform var(--pop-ms) var(--ease-pop), opacity calc(var(--fade-ms) * .6) var(--ease-out);
+}
+.pin.is-shown .pin-body { transform: scale(1); opacity: 1; }
+.pin-base.is-shown { opacity: 1; }
+.pin-body svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.pin-label {
+  position: absolute; top: 2px; white-space: nowrap;
+  padding: 4px 10px; border-radius: 999px;
+  background: rgba(10,10,10,.82); border: 1px solid rgba(255,255,255,.28);
+  font-size: 13px; font-weight: 500; line-height: 1.3; color: #fff;
+  opacity: 0; transition: opacity var(--fade-ms) var(--ease-out);
+}
+
+/* ---------- text layers ---------- */
+.fade { transition: opacity var(--fade-ms) var(--ease-out), transform var(--fade-ms) var(--ease-out); }
+
+.hero {
+  position: absolute; left: 0; right: 0; top: 8vh; padding: 0 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  text-align: center; pointer-events: none;
+}
+.logos { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
+.logos img { height: 80px; width: auto; display: block; border-radius: 3px; }
+.hero-title {
+  margin: 0; font-family: Inter, system-ui, sans-serif; font-weight: 800;
+  font-size: clamp(42px, 8.2vw, 128px); line-height: 1; letter-spacing: -.035em;
+}
+.hero-sub { margin: 0; font-weight: 600; font-size: clamp(17px, 1.9vw, 28px); line-height: 1.4; }
+
+.hint {
+  position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: 13px; color: rgba(255,255,255,.75); pointer-events: none;
+}
+
+.quote {
+  position: absolute; margin: 0; left: 48%; right: 48px; top: 30%; max-width: 660px;
+  font-weight: 700; font-size: clamp(22px, 2.7vw, 44px); line-height: 1.5;
+  color: var(--accent); opacity: 0; pointer-events: none;
+}
+
+.cta {
+  position: absolute; right: 64px; bottom: 72px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
+  opacity: 0; pointer-events: none;
+}
+.cta.is-active { pointer-events: auto; }
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 18px; min-height: 64px;
+  padding: 6px 6px 6px 28px; border-radius: 999px; border: 2px solid #fff;
+  background: rgba(10,10,10,.7); color: #fff; text-decoration: none;
+  font-size: 19px; font-weight: 600;
+  transition: background-color .2s ease;
+}
+.cta-btn:hover { background: rgba(255,255,255,.08); }
+.cta-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.cta-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 50%; background: var(--accent);
+}
+.cta-url { font-size: 13px; color: rgba(255,255,255,.7); }
+
+/* ---------- mobile ---------- */
+@media (max-width: 759px) {
+  .hero { top: 10vh; }
+  .logos img { height: 52px; }
+  .quote {
+    left: 16px; right: 16px; top: 14%; padding: 18px 20px;
+    border-radius: 16px; background: rgba(10,10,10,.78);
+  }
+  .cta { left: 16px; right: 16px; bottom: 40px; align-items: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade, .pin-body, .pin-label, .pin-base { transition: none; }
+}
+
+/* ปิดปุ่มเข้าแพลตฟอร์มชั่วคราว -- ลบบรรทัดนี้ถ้าจะเปิดกลับ */
+.cta { display: none; }

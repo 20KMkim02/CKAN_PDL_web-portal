@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Provincial Data Link — เชื่อมโยงข้อมูลสร้างโอกาสให้ทุกพื้นที่</title>
+  <meta name="description" content="แพลตฟอร์มเชื่อมโยงและบูรณาการข้อมูลระดับจังหวัด">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800&family=Prompt:wght@400;500;600;700&display=swap">
+  <!-- ?v= กัน Cloudflare/เบราว์เซอร์ส่งไฟล์เก่า: แก้ไฟล์ไหน ให้เติม/เปลี่ยนเลขต่อท้ายชื่อไฟล์นั้นเป็นวันที่ deploy
+       เช่น href="css/style.css?v=20261022"   deploy ซ้ำในวันเดียวกัน → ?v=20261022-2
+       เลขไม่ต้องตรงกับอะไร แค่ต้องไม่ซ้ำกับครั้งก่อน (nginx ไม่สนเลขนี้ ส่งไฟล์เดิมให้เสมอ) -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ความยาวของการเลื่อนถูกกำหนดโดย CONFIG.scroll.trackHeightPx -->
+  <main id="track" class="track">
+    <div id="stage" class="stage">
+      <div id="progress" class="progress" aria-hidden="true"></div>
+
+      <!-- ชั้น 3D: แผนที่ + เส้นแบ่งจังหวัด + เส้นเชื่อม + เงาฐาน pin -->
+      <div id="scene" class="scene">
+        <div id="map" class="map">
+          <!-- ?v=: ถ้าเปลี่ยนไฟล์แผนที่ ให้เติมเช่น src="assets/th-provinces.svg?v=20261022" -->
+          <img id="mapProvinces" class="map-layer map-provinces" src="assets/th-provinces.svg" alt="">
+          <img class="map-layer map-outline" src="assets/th-outline.svg" alt="แผนที่ประเทศไทย">
+          <svg id="links" class="map-layer links" viewBox="0 0 1040 1872" aria-hidden="true"></svg>
+          <div id="pinBases"></div>
+        </div>
+      </div>
+
+      <!-- ชั้น 2D: pin ตั้งตรง (คำนวณตำแหน่งจาก 3D projection) -->
+      <div id="pins" class="pins"></div>
+
+      <header id="hero" class="hero fade">
+        <div class="logos">
+          <!-- ?v=: ถ้าเปลี่ยนโลโก้ ให้เติมเช่น src="assets/pdlink-logo.png?v=20261022" -->
+          <img src="assets/pdlink-logo.png" alt="PD Link — Provincial Data Link">
+          <img src="assets/bdi-logo.png" alt="Big Data Institute">
+        </div>
+        <h1 class="hero-title">Provincial Data Link</h1>
+        <p class="hero-sub">เชื่อมโยงข้อมูลสร้างโอกาสให้ทุกพื้นที่</p>
+      </header>
+
+      <div id="hint" class="hint" aria-hidden="true">
+        <span>เลื่อนลงเพื่อสำรวจ</span>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+
+      <blockquote id="quote" class="quote fade">
+        แพลตฟอร์มเชื่อมโยงและบูรณาการ<br>ข้อมูลระดับจังหวัด เพื่อช่วยยกระดับ<br>การบริหารจัดการ ให้มีประสิทธิภาพ<br>ตอบโจทย์การพัฒนา ในทุกพื้นที่
+      </blockquote>
+
+      <div id="cta" class="cta fade">
+        <a id="ctaLink" class="cta-btn" href="#" target="_blank" rel="noopener">
+          <span>เข้าสู่แพลตฟอร์ม PD Link</span>
+          <span class="cta-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+        <span id="ctaUrl" class="cta-url"></span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ?v=: ถ้าแก้ js ให้เติมเช่น src="js/config.js?v=20261022" (คำอธิบายเต็มอยู่ใน <head>) -->
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
